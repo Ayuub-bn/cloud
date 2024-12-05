@@ -18,6 +18,16 @@ include ("../db/db.php");
 <body class="">
 <div class="col-md-6 mx-auto mt-5">
 
+<div class="input-group mb-3">
+<form class="input-group mb-3" method="POST" action="list.php">
+<input type="text" class="form-control" name="rech" placeholder="Rechercher un client" aria-label="Recipient's username" aria-describedby="basic-addon2">
+  <div class="input-group-append">
+  <button  class="input-group-text" type="submit" name="recherche">Rechercher</button>
+  </div>
+</form>
+</div>
+
+<br>
 
 
 
@@ -29,7 +39,7 @@ Ajouter nouveau client : &nbsp;<button type="button" class="btn btn-primary"><a 
  <?php echo $_SESSION['message'];  unset($_SESSION['message']); $_SESSION['message']=""; ?>
   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
-
+<br>
 
 <table class="table">
   <thead>
@@ -45,8 +55,35 @@ Ajouter nouveau client : &nbsp;<button type="button" class="btn btn-primary"><a 
   <tbody>
 <?php 
 
+if(isset($_POST['recherche']))
+{
+  $p=$_POST['rech'];
 
-$sql="Select * from client";
+  $sql="select * from region where libelle='$p'";
+  
+
+  $result=mysqli_query($conn,$sql);
+  if(mysqli_num_rows($result)> 0)
+  {
+    $row=mysqli_fetch_array($result);
+    $region=$row['id'];
+    $region=" or idRegion='$region'";
+  }
+  else
+  {
+    $region="";
+  }
+
+
+  $sql="Select * from client where nom='$p' or prenom='$p' or age='$p' $region";
+  unset($_POST['recherche']);
+}
+else
+{
+  $sql="Select * from client";
+
+}
+
 $result=mysqli_query($conn,$sql);
 if($result->num_rows==0)
  {
